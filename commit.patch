@@ -1,0 +1,3431 @@
+Index: src/conf/MANIFEST.MF
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/conf/MANIFEST.MF	(date 1488737717000)
++++ src/conf/MANIFEST.MF	(date 1488737717000)
+@@ -0,0 +1,2 @@
++Manifest-Version: 1.0
++
+Index: src/java/com/rasha/controller/BooksController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/controller/BooksController.java	(date 1524568177826)
++++ src/java/com/rasha/controller/BooksController.java	(date 1524568177826)
+@@ -0,0 +1,158 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.controller;
++
++import com.rasha.dao.BooksDao;
++import com.rasha.model.Books;
++import java.io.IOException;
++import java.io.PrintWriter;
++import java.util.List;
++import javax.servlet.ServletException;
++import javax.servlet.http.HttpServlet;
++import javax.servlet.http.HttpServletRequest;
++import javax.servlet.http.HttpServletResponse;
++
++/**
++ *
++ * @author @fahad
++ */
++public class BooksController extends HttpServlet {
++
++    /**
++     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
++     * methods.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++        response.setContentType("text/html;charset=UTF-8");
++        try (PrintWriter out = response.getWriter()) {
++            /* TODO output your page here. You may use following sample code. */
++
++        }
++    }
++
++    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
++    /**
++     * Handles the HTTP <code>GET</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doGet(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++
++        response.setContentType("text/html;charset=UTF-8");
++        PrintWriter out = response.getWriter();
++
++        if (request.getParameter("action") != null && request.getParameter("action").equals("delete")) {
++            BooksDao dao = new BooksDao();
++            dao.deleteBook(request.getParameter("isbn"));
++
++            List<Books> allBooks = dao.getAllBooks();
++            dao.closeConnection();
++            request.setAttribute("allBooks", allBooks);
++            request.getRequestDispatcher("books.jsp").forward(request, response);
++
++        } else if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {
++
++            BooksDao dao = new BooksDao();
++            Books book = dao.getBookById(request.getParameter("isbn"));
++
++            dao.closeConnection();
++            request.setAttribute("book", book);
++            request.getRequestDispatcher("newbook.jsp?action=update").forward(request, response);
++
++        } else if (request.getParameter("create") != null) {
++
++            Books book = new Books();
++            BooksDao dao = new BooksDao();
++
++            book.setIsbn(request.getParameter("isbn"));
++            book.setBookname(request.getParameter("bookname"));
++            book.setAuthorname(request.getParameter("authorname"));
++            book.setCategory(request.getParameter("category"));
++            book.setSelfno(Integer.valueOf(request.getParameter("selfno")));
++
++//            out.println(student.getId() + " " + student.getGender() + " " + student.getDept());
++            boolean flag = dao.addBooks(book);
++
++            if (flag) {
++                request.setAttribute("flag", "reg");
++            } else {
++                request.setAttribute("exists", "yes");
++            }
++            List<Books> allBooks = dao.getAllBooks();
++            dao.closeConnection();
++            request.setAttribute("allBooks", allBooks);
++            request.setAttribute("isbn", book.getIsbn());
++            request.getRequestDispatcher("books.jsp").forward(request, response);
++
++        } else if (request.getParameter("update") != null) {
++
++//            out.println("update");
++            Books book = new Books();
++            BooksDao dao = new BooksDao();
++
++            book.setIsbn(request.getParameter("isbn"));
++            book.setBookname(request.getParameter("bookname"));
++            book.setAuthorname(request.getParameter("authorname"));
++            book.setCategory(request.getParameter("category"));
++            book.setSelfno(Integer.valueOf(request.getParameter("selfno")));
++
++//            out.println(student.getId() + " " + student.getMs()+ " " + student.getDept());
++            boolean flag = dao.updateBooks(book);
++            if (flag) {
++                request.setAttribute("flag", "update");
++            }
++            List<Books> allBooks = dao.getAllBooks();
++            dao.closeConnection();
++            request.setAttribute("allBooks", allBooks);
++            request.setAttribute("isbn", book.getIsbn());
++            request.getRequestDispatcher("books.jsp").forward(request, response);
++
++        } else {
++//            out.println(request.getParameter("action"));
++            BooksDao dao = new BooksDao();
++            List<Books> allBooks = dao.getAllBooks();
++            dao.closeConnection();
++            request.setAttribute("allBooks", allBooks);
++            request.getRequestDispatcher("books.jsp").forward(request, response);
++        }
++    }
++
++    /**
++     * Handles the HTTP <code>POST</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doPost(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++        processRequest(request, response);
++    }
++
++    /**
++     * Returns a short description of the servlet.
++     *
++     * @return a String containing servlet description
++     */
++    @Override
++    public String getServletInfo() {
++        return "Short description";
++    }// </editor-fold>
++
++}
+Index: src/java/com/rasha/controller/BorrowController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/controller/BorrowController.java	(date 1524568178011)
++++ src/java/com/rasha/controller/BorrowController.java	(date 1524568178011)
+@@ -0,0 +1,145 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.controller;
++
++import com.rasha.dao.BooksDao;
++import com.rasha.dao.BorrowDao;
++import com.rasha.dao.StudentsDao;
++import com.rasha.model.Books;
++import com.rasha.model.Borrow;
++import com.rasha.model.Students;
++import java.io.IOException;
++import java.io.PrintWriter;
++
++import java.text.ParseException;
++import java.text.SimpleDateFormat;
++import java.util.Date;
++import java.util.logging.Level;
++import java.util.logging.Logger;
++import javax.servlet.ServletException;
++import javax.servlet.http.HttpServlet;
++import javax.servlet.http.HttpServletRequest;
++import javax.servlet.http.HttpServletResponse;
++
++/**
++ *
++ * @author @fahad
++ */
++public class BorrowController extends HttpServlet {
++
++    /**
++     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
++     * methods.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++        response.setContentType("text/html;charset=UTF-8");
++        try (PrintWriter out = response.getWriter()) {
++        }
++    }
++
++    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
++    /**
++     * Handles the HTTP <code>GET</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doGet(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++        response.setContentType("text/html;charset=UTF-8");
++        try (PrintWriter out = response.getWriter()) {
++
++            if (request.getParameter("submit") != null) {
++                String studentId = request.getParameter("studentid");
++                String bookId = request.getParameter("bookid");
++
++                BooksDao booksDao = new BooksDao();
++                StudentsDao studentsDao = new StudentsDao();
++
++                Books book = booksDao.getBookById(bookId);
++                Students student = studentsDao.getStudentById(studentId);
++
++                if (student.getId() == 0) {
++                    out.println("Student Not Found!!!");
++                } else {
++                    if (book.getSelfno() == 0) {
++                        out.println("Book Not Found!!!");
++                    } else {
++                        request.setAttribute("book", book);
++                        request.setAttribute("student", student);
++
++                        request.getRequestDispatcher("confirmborrow.jsp").forward(request, response);
++                    }
++                }
++            } else if (request.getParameter("confirm") != null) {
++
++                Borrow borrow = new Borrow();
++                borrow.setStudentId(request.getParameter("studentid"));
++                borrow.setBookId(request.getParameter("bookid"));
++
++                String borrowdateStr = request.getParameter("borrowdate");
++                String returndateStr = request.getParameter("returndate");
++
++                Date borrowDate = (Date) new SimpleDateFormat("dd/MM/yyyy").parse(borrowdateStr);
++                Date returnDate = (Date) new SimpleDateFormat("dd/MM/yyyy").parse(returndateStr);
++
++//                out.println(borrowDate + " " + returnDate);
++                borrow.setBorrowDate(new java.sql.Date(borrowDate.getTime()));
++                borrow.setReturnDate(new java.sql.Date(returnDate.getTime()));
++
++                BorrowDao dao = new BorrowDao();
++                boolean flag = dao.borrowBook(borrow);
++//                if (flag) {
++//                    out.println("Successfull!!!");
++//                } else {
++//                    out.println("Fail!!!");
++//                }
++                request.setAttribute("flag", flag);
++                request.getRequestDispatcher("borrow.jsp").forward(request, response);
++            } else if (request.getParameter("notconfirm") != null) {
++
++                request.getRequestDispatcher("borrow.jsp").forward(request, response);
++            }
++
++        } catch (ParseException ex) {
++            Logger.getLogger(BorrowController.class.getName()).log(Level.SEVERE, null, ex);
++        }
++    }
++
++    /**
++     * Handles the HTTP <code>POST</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doPost(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++        processRequest(request, response);
++    }
++
++    /**
++     * Returns a short description of the servlet.
++     *
++     * @return a String containing servlet description
++     */
++    @Override
++    public String getServletInfo() {
++        return "Short description";
++    }// </editor-fold>
++
++}
+Index: src/java/com/rasha/controller/LoginController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/controller/LoginController.java	(date 1524568268738)
++++ src/java/com/rasha/controller/LoginController.java	(date 1524568268738)
+@@ -0,0 +1,117 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.controller;
++
++import com.rasha.dao.UsersDao;
++import com.rasha.model.User;
++import java.io.IOException;
++import java.io.PrintWriter;
++import java.sql.SQLException;
++import javax.servlet.ServletException;
++import javax.servlet.http.HttpServlet;
++import javax.servlet.http.HttpServletRequest;
++import javax.servlet.http.HttpServletResponse;
++import javax.servlet.http.HttpSession;
++
++/**
++ *
++ * @author @fahad
++ */
++public class LoginController extends HttpServlet {
++
++    /**
++     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
++     * methods.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException, SQLException {
++        response.setContentType("text/html;charset=UTF-8");
++    }
++
++    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
++    /**
++     * Handles the HTTP <code>GET</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doGet(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++
++    }
++
++    /**
++     * Handles the HTTP <code>POST</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doPost(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++
++        response.setContentType("text/html;charset=UTF-8");
++
++        if (request.getParameter("username").length() == 0) {
++            request.setAttribute("errMsg", "User Name Can't be blank!!!");
++            request.getRequestDispatcher("login.jsp").forward(request, response);
++            return;
++        }
++        if (request.getParameter("password").length() == 0) {
++            request.setAttribute("errMsg", "Password Can't be blank!!!");
++            request.getRequestDispatcher("login.jsp").forward(request, response);
++            return;
++        }
++
++        try (PrintWriter out = response.getWriter()) {
++
++            User user;
++            UsersDao dao = new UsersDao();
++
++            HttpSession session = request.getSession(true);
++
++            String username = request.getParameter("username");
++            String password = request.getParameter("password");
++
++            try {
++                user = dao.getUserById(username);
++                dao.closeConnection();
++
++                if (user.getPassword().equals(password)) {
++                    session.setAttribute("username", username);
++                    request.getRequestDispatcher("home.jsp").forward(request, response);
++                } else {
++                    request.setAttribute("errMsg", "Username Password doesn't match!!!");
++                    request.getRequestDispatcher("login.jsp").forward(request, response);
++                }
++            } catch (Exception e) {
++                request.setAttribute("errMsg", "No Username and Password found!!!");
++                request.getRequestDispatcher("login.jsp").forward(request, response);
++            }
++        }
++    }
++
++    /**
++     * Returns a short description of the servlet.
++     *
++     * @return a String containing servlet description
++     */
++    @Override
++    public String getServletInfo() {
++        return "Short description";
++    }// </editor-fold>
++
++}
+Index: src/java/com/rasha/controller/ReturnController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/controller/ReturnController.java	(date 1524568268690)
++++ src/java/com/rasha/controller/ReturnController.java	(date 1524568268690)
+@@ -0,0 +1,193 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.controller;
++
++import com.rasha.dao.BooksDao;
++import com.rasha.dao.BorrowDao;
++import com.rasha.dao.ReturnDao;
++import com.rasha.dao.StudentsDao;
++import com.rasha.model.BRCombo;
++import com.rasha.model.Books;
++import com.rasha.model.Borrow;
++import com.rasha.model.Return;
++import com.rasha.model.Students;
++import java.io.IOException;
++import java.io.PrintWriter;
++import java.text.ParseException;
++import java.text.SimpleDateFormat;
++import java.util.ArrayList;
++import java.util.Date;
++import java.util.List;
++import java.util.logging.Level;
++import java.util.logging.Logger;
++import javax.servlet.ServletException;
++import javax.servlet.http.HttpServlet;
++import javax.servlet.http.HttpServletRequest;
++import javax.servlet.http.HttpServletResponse;
++
++/**
++ *
++ * @author @fahad
++ */
++public class ReturnController extends HttpServlet {
++
++    /**
++     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
++     * methods.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++        response.setContentType("text/html;charset=UTF-8");
++        try (PrintWriter out = response.getWriter()) {
++
++        }
++    }
++
++    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
++    /**
++     * Handles the HTTP <code>GET</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doGet(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++        response.setContentType("text/html;charset=UTF-8");
++        try (PrintWriter out = response.getWriter()) {
++
++            if (request.getParameter("fine") != null) {
++
++                BorrowDao borrowDao = new BorrowDao();
++                Borrow borrow = borrowDao.getBorrowById(request.getParameter("id"));
++
++                String returnedDate = request.getParameter("returndate");
++                Date returnDate = (Date) new SimpleDateFormat("dd/MM/yyyy").parse(returnedDate);
++
++                ReturnDao returnDao = new ReturnDao();
++                Return returnObj = new Return();
++                returnObj.setId(borrow.getId());
++                returnObj.setStudentId(borrow.getStudentId());
++                returnObj.setBookId(borrow.getBookId());
++                returnObj.setReturnDate(new java.sql.Date(returnDate.getTime()));
++                returnObj.setFine(Integer.valueOf(request.getParameter("fine")));
++//
++                boolean flag = returnDao.addReturn(returnObj);
++                if (flag) {
++                    flag = borrowDao.updateStatusById(Integer.valueOf(request.getParameter("id")));
++                    if (flag) {
++                        
++                        List<Borrow> allBorrows = borrowDao.getAllBorrowsToReturn();
++
++                        BooksDao booksDao = new BooksDao();
++                        StudentsDao studentsDao = new StudentsDao();
++
++                        List<BRCombo> allBr = new ArrayList<>();
++
++                        for (Borrow b : allBorrows) {
++
++                            Books book = booksDao.getBookById(b.getBookId());
++                            Students student = studentsDao.getStudentById(b.getStudentId());
++
++                            BRCombo brc = new BRCombo();
++
++                            brc.setId(b.getId());
++                            brc.setTitle(book.getBookname());
++                            brc.setAuthorName(book.getAuthorname());
++
++                            brc.setStudentId(b.getStudentId());
++                            brc.setStudentName(student.getFirstName() + " " + student.getLastName());
++
++                            brc.setBorrowDate(b.getBorrowDate());
++                            brc.setReturnDate(b.getReturnDate());
++
++                            brc.setStatus(b.getStatus());
++
++                            allBr.add(brc);
++                        }
++
++                        request.setAttribute("allBr", allBr);
++                        request.setAttribute("flag", flag);
++                        request.getRequestDispatcher("return.jsp").forward(request, response);
++                    } else {
++                        out.println("Error 1 !!!");
++                    }
++                } else {
++                    out.println("Error 2 !!!");
++                }
++
++            } else {
++
++                BorrowDao borrowDao = new BorrowDao();
++                List<Borrow> allBorrows = borrowDao.getAllBorrowsToReturn();
++
++                BooksDao booksDao = new BooksDao();
++                StudentsDao studentsDao = new StudentsDao();
++
++                List<BRCombo> allBr = new ArrayList<>();
++
++                for (Borrow b : allBorrows) {
++
++                    Books book = booksDao.getBookById(b.getBookId());
++                    Students student = studentsDao.getStudentById(b.getStudentId());
++
++                    BRCombo brc = new BRCombo();
++
++                    brc.setId(b.getId());
++                    brc.setTitle(book.getBookname());
++                    brc.setAuthorName(book.getAuthorname());
++
++                    brc.setStudentId(b.getStudentId());
++                    brc.setStudentName(student.getFirstName() + " " + student.getLastName());
++
++                    brc.setBorrowDate(b.getBorrowDate());
++                    brc.setReturnDate(b.getReturnDate());
++
++                    brc.setStatus(b.getStatus());
++
++                    allBr.add(brc);
++                }
++
++                request.setAttribute("allBr", allBr);
++                request.getRequestDispatcher("return.jsp").forward(request, response);
++            }
++        } catch (ParseException ex) {
++            Logger.getLogger(ReturnController.class.getName()).log(Level.SEVERE, null, ex);
++        }
++    }
++
++    /**
++     * Handles the HTTP <code>POST</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doPost(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++        processRequest(request, response);
++    }
++
++    /**
++     * Returns a short description of the servlet.
++     *
++     * @return a String containing servlet description
++     */
++    @Override
++    public String getServletInfo() {
++        return "Short description";
++    }// </editor-fold>
++
++}
+Index: src/java/com/rasha/controller/StudentsController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/controller/StudentsController.java	(date 1524568269548)
++++ src/java/com/rasha/controller/StudentsController.java	(date 1524568269548)
+@@ -0,0 +1,163 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.controller;
++
++import com.rasha.dao.StudentsDao;
++import com.rasha.model.Students;
++import java.io.IOException;
++import java.io.PrintWriter;
++import java.util.List;
++import javax.servlet.ServletException;
++import javax.servlet.http.HttpServlet;
++import javax.servlet.http.HttpServletRequest;
++import javax.servlet.http.HttpServletResponse;
++
++/**
++ *
++ * @author @fahad
++ */
++public class StudentsController extends HttpServlet {
++
++    /**
++     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
++     * methods.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++        response.setContentType("text/html;charset=UTF-8");
++        try (PrintWriter out = response.getWriter()) {
++
++        }
++    }
++
++    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
++    /**
++     * Handles the HTTP <code>GET</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doGet(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++
++        response.setContentType("text/html;charset=UTF-8");
++        PrintWriter out = response.getWriter();
++
++        if (request.getParameter("action") != null && request.getParameter("action").equals("delete")) {
++            StudentsDao dao = new StudentsDao();
++            dao.deleteStudent(request.getParameter("id"));
++
++            List<Students> allStudents = dao.getAllStudents();
++            request.setAttribute("allStudents", allStudents);
++            request.getRequestDispatcher("students.jsp").forward(request, response);
++
++        } else if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {
++
++            StudentsDao dao = new StudentsDao();
++            Students student = dao.getStudentById(request.getParameter("id"));
++
++            request.setAttribute("student", student);
++            request.getRequestDispatcher("newstudent.jsp?action=update").forward(request, response);
++
++        } else if (request.getParameter("create") != null) {
++
++            Students student = new Students();
++            StudentsDao dao = new StudentsDao();
++
++            student.setId(Integer.valueOf(request.getParameter("id")));
++            student.setFirstName(request.getParameter("firstname"));
++            student.setLastName(request.getParameter("lastname"));
++            student.setEmail(request.getParameter("email"));
++            student.setPhoneNo(request.getParameter("phoneno"));
++            student.setAddress(request.getParameter("address"));
++
++            student.setGender(Integer.valueOf(request.getParameter("gender")));
++            student.setMs(Integer.valueOf(request.getParameter("ms")));
++            student.setDept(request.getParameter("dept"));
++
++//            out.println(student.getId() + " " + student.getGender() + " " + student.getDept());
++            boolean flag = dao.addStudents(student);
++
++            if (flag) {
++                request.setAttribute("flag", "reg");
++            } else {
++                request.setAttribute("exists", "yes");
++            }
++            List<Students> allStudents = dao.getAllStudents();
++            request.setAttribute("allStudents", allStudents);
++            request.setAttribute("id", student.getId());
++            request.getRequestDispatcher("students.jsp").forward(request, response);
++
++        } else if (request.getParameter("update") != null) {
++
++//            out.println("update");
++            Students student = new Students();
++            StudentsDao dao = new StudentsDao();
++
++            student.setId(Integer.valueOf(request.getParameter("id")));
++            student.setFirstName(request.getParameter("firstname"));
++            student.setLastName(request.getParameter("lastname"));
++            student.setEmail(request.getParameter("email"));
++            student.setPhoneNo(request.getParameter("phoneno"));
++            student.setAddress(request.getParameter("address"));
++
++            student.setGender(Integer.valueOf(request.getParameter("gender")));
++            student.setMs(Integer.valueOf(request.getParameter("ms")));
++            student.setDept(request.getParameter("dept"));
++
++//            out.println(student.getId() + " " + student.getMs()+ " " + student.getDept());
++            boolean flag = dao.updateStudent(student);
++            if (flag) {
++                request.setAttribute("flag", "update");
++            }
++            List<Students> allStudents = dao.getAllStudents();
++            request.setAttribute("allStudents", allStudents);
++            request.setAttribute("id", student.getId());
++            request.getRequestDispatcher("students.jsp").forward(request, response);
++
++        } else {
++//            out.println(request.getParameter("action"));
++            StudentsDao dao = new StudentsDao();
++            List<Students> allStudents = dao.getAllStudents();
++
++            request.setAttribute("allStudents", allStudents);
++            request.getRequestDispatcher("students.jsp").forward(request, response);
++        }
++    }
++
++    /**
++     * Handles the HTTP <code>POST</code> method.
++     *
++     * @param request servlet request
++     * @param response servlet response
++     * @throws ServletException if a servlet-specific error occurs
++     * @throws IOException if an I/O error occurs
++     */
++    @Override
++    protected void doPost(HttpServletRequest request, HttpServletResponse response)
++            throws ServletException, IOException {
++
++    }
++
++    /**
++     * Returns a short description of the servlet.
++     *
++     * @return a String containing servlet description
++     */
++    @Override
++    public String getServletInfo() {
++        return "Short description";
++    }// </editor-fold>
++
++}
+Index: src/java/com/rasha/dao/BooksDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/dao/BooksDao.java	(date 1524568268790)
++++ src/java/com/rasha/dao/BooksDao.java	(date 1524568268790)
+@@ -0,0 +1,153 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.dao;
++
++import com.rasha.model.Books;
++import com.rasha.model.Students;
++import com.rasha.util.Database;
++import java.sql.Connection;
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.logging.Level;
++import java.util.logging.Logger;
++
++/**
++ *
++ * @author @fahad
++ */
++public class BooksDao {
++
++    final String TABLE = "books";
++    private Connection connection = null;
++
++    public BooksDao() {
++        connection = Database.getConnection();
++    }
++
++    public boolean addBooks(Books book) {
++
++        String sql = "INSERT into " + TABLE + "(isbn, `book name`, `author name`, category, `self no`) "
++                + "VALUES(?, ?, ?, ?, ?)";
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, book.getIsbn());
++            ps.setString(2, book.getBookname());
++            ps.setString(3, book.getAuthorname());
++            ps.setString(4, book.getCategory());
++            ps.setInt(5, book.getSelfno());
++
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++            return false;
++        }
++        return true;
++    }
++
++    public void deleteBook(String bookId) {
++        String sql = "DELETE from " + TABLE + " WHERE isbn = ?";
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, bookId);
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++    }
++
++    public List<Books> getAllBooks() {
++
++        List<Books> books = new ArrayList<>();
++        String sql = "SELECT * from " + TABLE;
++
++        try {
++            Statement statement = connection.createStatement();
++            ResultSet rs = statement.executeQuery(sql);
++
++            while (rs.next()) {
++                Books book = new Books();
++
++                book.setIsbn(rs.getString(1));
++                book.setBookname(rs.getString(2));
++                book.setAuthorname(rs.getString(3));
++                book.setCategory(rs.getString(4));
++                book.setSelfno(rs.getInt(5));
++
++                books.add(book);
++            }
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++
++        return books;
++    }
++
++    public Books getBookById(String bookId) {
++
++        Books book = new Books();
++        String sql = "SELECT * from " + TABLE + " WHERE isbn = ?";
++
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, bookId);
++            ResultSet rs = ps.executeQuery();
++
++            while (rs.next()) {
++                book.setIsbn(rs.getString(1));
++                book.setBookname(rs.getString(2));
++                book.setAuthorname(rs.getString(3));
++                book.setCategory(rs.getString(4));
++                book.setSelfno(rs.getInt(5));
++            }
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++
++        return book;
++    }
++
++    public boolean updateBooks(Books book) {
++        String sql = "UPDATE " + TABLE
++                + " SET isbn = ?, `book name` = ?, `author name` = ?, category = ?, `self no` = ? WHERE isbn = ?";
++
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, book.getIsbn());
++            ps.setString(2, book.getBookname());
++            ps.setString(3, book.getAuthorname());
++            ps.setString(4, book.getCategory());
++            ps.setInt(5, book.getSelfno());
++            ps.setString(6, book.getIsbn());
++
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++            return false;
++        }
++        return true;
++    }
++
++    public void closeConnection() {
++
++        try {
++            connection.close();
++        } catch (SQLException ex) {
++            Logger.getLogger(BooksDao.class.getName()).log(Level.SEVERE, null, ex);
++        }
++    }
++}
+Index: src/java/com/rasha/dao/BorrowDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/dao/BorrowDao.java	(date 1524568269408)
++++ src/java/com/rasha/dao/BorrowDao.java	(date 1524568269408)
+@@ -0,0 +1,156 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.dao;
++
++import com.rasha.model.Borrow;
++import com.rasha.util.Database;
++import java.sql.Connection;
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.List;
++
++/**
++ *
++ * @author @fahad
++ */
++public class BorrowDao {
++
++    final String TABLE = "borrow";
++    private Connection connection = null;
++
++    public BorrowDao() {
++        connection = Database.getConnection();
++    }
++
++    public boolean borrowBook(Borrow borrow) {
++
++        String sql = "INSERT into " + TABLE + "(`student id`, `book id`, `borrow date`, `return date`) "
++                + "VALUES(?, ?, ?, ?)";
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, borrow.getStudentId());
++            ps.setString(2, borrow.getBookId());
++            ps.setDate(3, borrow.getBorrowDate());
++            ps.setDate(4, borrow.getReturnDate());
++
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++            return false;
++        }
++        return true;
++    }
++
++    public Borrow getBorrowById(String borrowId) {
++
++        Borrow borrow = new Borrow();
++        String sql = "SELECT * from " + TABLE + " WHERE id = ?";
++
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++            ps.setString(1, borrowId);
++            ResultSet rs = ps.executeQuery();
++
++            while (rs.next()) {
++                borrow.setId(rs.getInt(1));
++                borrow.setStudentId(rs.getString(2));
++                borrow.setBookId(rs.getString(3));
++                borrow.setBorrowDate(rs.getDate(4));
++                borrow.setReturnDate(rs.getDate(5));
++                borrow.setStatus(rs.getInt(6));
++            }
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++
++        return borrow;
++    }
++
++    public List<Borrow> getAllBorrows() {
++
++        List<Borrow> borrows = new ArrayList<>();
++        String sql = "SELECT * from " + TABLE;
++
++        try {
++            Statement statement = connection.createStatement();
++            ResultSet rs = statement.executeQuery(sql);
++
++            while (rs.next()) {
++                Borrow borrow = new Borrow();
++
++                borrow.setId(rs.getInt(1));
++                borrow.setStudentId(rs.getString(2));
++                borrow.setBookId(rs.getString(3));
++                borrow.setBorrowDate(rs.getDate(4));
++                borrow.setReturnDate(rs.getDate(5));
++                borrow.setStatus(rs.getInt(6));
++
++                borrows.add(borrow);
++            }
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++        return borrows;
++    }
++
++    public List<Borrow> getAllBorrowsToReturn() {
++
++        List<Borrow> borrows = new ArrayList<>();
++        String sql = "SELECT * from " + TABLE + " WHERE status = 0";
++
++        try {
++            Statement statement = connection.createStatement();
++            ResultSet rs = statement.executeQuery(sql);
++
++            while (rs.next()) {
++                Borrow borrow = new Borrow();
++
++                borrow.setId(rs.getInt(1));
++                borrow.setStudentId(rs.getString(2));
++                borrow.setBookId(rs.getString(3));
++                borrow.setBorrowDate(rs.getDate(4));
++                borrow.setReturnDate(rs.getDate(5));
++                borrow.setStatus(rs.getInt(6));
++
++                borrows.add(borrow);
++            }
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++        return borrows;
++    }
++
++    public boolean updateStatusById(int borrowId) {
++
++        String sql = "UPDATE " + TABLE + " SET status = ? WHERE id = ?";
++
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setInt(1, 1);
++            ps.setInt(2, borrowId);
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++            return false;
++        }
++        return true;
++    }
++
++    public void closeConnection() {
++
++        try {
++            connection.close();
++        } catch (Exception ex) {
++            System.out.println(ex);
++        }
++    }
++}
+Index: src/java/com/rasha/dao/ReturnDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/dao/ReturnDao.java	(date 1524568269005)
++++ src/java/com/rasha/dao/ReturnDao.java	(date 1524568269005)
+@@ -0,0 +1,59 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.dao;
++
++import com.rasha.model.Books;
++import com.rasha.model.Return;
++import com.rasha.util.Database;
++import java.sql.Connection;
++import java.sql.PreparedStatement;
++
++/**
++ *
++ * @author @fahad
++ */
++public class ReturnDao {
++
++    final String TABLE = "returns";
++    private Connection connection = null;
++
++    public ReturnDao() {
++        connection = Database.getConnection();
++    }
++
++    public boolean addReturn(Return returnObj) {
++
++        String sql = "INSERT into " + TABLE + "(id, `student id`, `book id`, `return date`, fine) "
++                + "VALUES(?, ?, ?, ?, ?)";
++        try {
++            BorrowDao dao = new BorrowDao();
++
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setInt(1, returnObj.getId());
++            ps.setString(2, returnObj.getStudentId());
++            ps.setString(3, returnObj.getBookId());
++            ps.setDate(4, returnObj.getReturnDate());
++            ps.setInt(5, returnObj.getFine());
++
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++            return false;
++        }
++        return true;
++    }
++
++    public void closeConnection() {
++
++        try {
++            connection.close();
++        } catch (Exception ex) {
++            System.out.println(ex);
++        }
++    }
++}
+Index: src/java/com/rasha/dao/StudentsDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/dao/StudentsDao.java	(date 1524568269174)
++++ src/java/com/rasha/dao/StudentsDao.java	(date 1524568269174)
+@@ -0,0 +1,168 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.dao;
++
++import com.rasha.model.Students;
++import com.rasha.util.Database;
++import java.sql.Connection;
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.List;
++
++/**
++ *
++ * @author @fahad
++ */
++public class StudentsDao {
++
++    final String TABLE = "students";
++    private Connection connection = null;
++
++    public StudentsDao() {
++        connection = Database.getConnection();
++    }
++
++    public boolean addStudents(Students student) {
++
++        System.out.println(student.getFirstName() + " " + student.getDept());
++
++        String sql = "INSERT into " + TABLE + "(id, `first name`, `last name`, email, `phone no`, address, gender, ms, dept) "
++                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setInt(1, student.getId());
++            ps.setString(2, student.getFirstName());
++            ps.setString(3, student.getLastName());
++            ps.setString(4, student.getEmail());
++            ps.setString(5, student.getPhoneNo());
++            ps.setString(6, student.getAddress());
++            ps.setInt(7, student.getGender());
++            ps.setInt(8, student.getMs());
++            ps.setString(9, student.getDept());
++
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++            return false;
++        }
++        return true;
++    }
++
++    public void deleteStudent(String studentId) {
++        String sql = "DELETE from " + TABLE + " WHERE id = ?";
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, studentId);
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++    }
++
++    public List<Students> getAllStudents() {
++
++        List<Students> students = new ArrayList<>();
++        String sql = "SELECT * from " + TABLE;
++
++        try {
++            Statement statement = connection.createStatement();
++            ResultSet rs = statement.executeQuery(sql);
++
++            while (rs.next()) {
++                Students student = new Students();
++
++                student.setId(rs.getInt(1));
++                student.setFirstName(rs.getString(2));
++                student.setLastName(rs.getString(3));
++                student.setEmail(rs.getString(4));
++                student.setPhoneNo(rs.getString(5));
++                student.setAddress(rs.getString(6));
++                student.setGender(rs.getInt(7));
++                student.setMs(rs.getInt(8));
++                student.setDept(rs.getString(9));
++
++                students.add(student);
++            }
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++
++        return students;
++    }
++
++    public Students getStudentById(String studentId) {
++
++        Students student = new Students();
++        String sql = "SELECT * from " + TABLE + " WHERE id = ?";
++
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, studentId);
++            ResultSet rs = ps.executeQuery();
++
++            while (rs.next()) {
++                student.setId(rs.getInt(1));
++                student.setFirstName(rs.getString(2));
++                student.setLastName(rs.getString(3));
++                student.setEmail(rs.getString(4));
++                student.setPhoneNo(rs.getString(5));
++                student.setAddress(rs.getString(6));
++                student.setGender(rs.getInt(7));
++                student.setMs(rs.getInt(8));
++                student.setDept(rs.getString(9));
++            }
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++
++        return student;
++    }
++
++    public boolean updateStudent(Students student) {
++        String sql = "UPDATE " + TABLE
++                + " SET id = ?, `first name` = ?, `last name` = ?, email = ?, `phone no` = ?, address = ?, gender = ?, ms = ?, dept = ? WHERE id = ?";
++
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setInt(1, student.getId());
++            ps.setString(2, student.getFirstName());
++            ps.setString(3, student.getLastName());
++            ps.setString(4, student.getEmail());
++            ps.setString(5, student.getPhoneNo());
++            ps.setString(6, student.getAddress());
++            ps.setInt(7, student.getGender());
++            ps.setInt(8, student.getMs());
++            ps.setString(9, student.getDept());
++
++            ps.setInt(10, student.getId());
++
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++            return false;
++        }
++        return true;
++    }
++
++    public void closeConnection() {
++
++        try {
++            connection.close();
++        } catch (Exception ex) {
++            System.out.println(ex);
++        }
++    }
++}
+Index: src/java/com/rasha/dao/UsersDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/dao/UsersDao.java	(date 1524568268950)
++++ src/java/com/rasha/dao/UsersDao.java	(date 1524568268950)
+@@ -0,0 +1,148 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.dao;
++
++import com.rasha.model.User;
++import com.rasha.util.Database;
++import java.sql.Connection;
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.List;
++
++/**
++ *
++ * @author @fahad
++ */
++public class UsersDao {
++
++    final String USER_TABLE = "users";
++    private Connection connection = null;
++
++    public UsersDao() {
++        connection = Database.getConnection();
++    }
++
++    public void checkUser(User user) {
++        String sql = "SELECT `user name` from " + USER_TABLE + " WHERE `user name` = ?";
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++            ps.setString(1, user.getUsername());
++            ResultSet rs = ps.executeQuery();
++
++            if (rs.next()) {
++                updateUser(user);
++            } else {
++                addUser(user);
++            }
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++    }
++
++    public void addUser(User user) {
++        String sql = "INSERT into " + USER_TABLE + "(`user name`, password, email) VALUES(?, ?, ?)";
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, user.getUsername());
++            ps.setString(2, user.getPassword());
++            ps.setString(3, user.getEmail());
++
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++    }
++
++    public void deleteUser(String userId) {
++        String sql = "DELETE from " + USER_TABLE + " WHERE `user name` = ?";
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, userId);
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++    }
++
++    public void updateUser(User user) {
++        String sql = "UPDATE " + USER_TABLE + " SET password = ?, email = ? WHERE `user name` = ?";
++
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, user.getPassword());
++            ps.setString(2, user.getEmail());
++            ps.setString(4, user.getUsername());
++
++            ps.executeUpdate();
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++    }
++
++    public List<User> getAllUsers() {
++        List<User> users = new ArrayList<>();
++
++        String sql = "SELECT * from " + USER_TABLE;
++
++        try {
++            Statement statement = connection.createStatement();
++            ResultSet rs = statement.executeQuery(sql);
++
++            while (rs.next()) {
++                User user = new User();
++
++                user.setUsername(rs.getString(1));
++                user.setPassword(rs.getString(2));
++                user.setEmail(rs.getString(3));
++
++                users.add(user);
++            }
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++        return users;
++    }
++
++    public User getUserById(String userId) {
++        User user = new User();
++        String sql = "SELECT * from " + USER_TABLE + " WHERE `user name` = ?";
++
++        try {
++            PreparedStatement ps = connection.prepareStatement(sql);
++
++            ps.setString(1, userId);
++            ResultSet rs = ps.executeQuery();
++
++            while (rs.next()) {
++                user.setUsername(rs.getString(1));
++                user.setPassword(rs.getString(2));
++                user.setEmail(rs.getString(3));
++            }
++
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++
++        return user;
++    }
++
++    public void closeConnection() {
++
++        try {
++            connection.close();
++        } catch (Exception ex) {
++            System.out.println(ex);
++        }
++    }
++}
+Index: src/java/com/rasha/model/Books.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/model/Books.java	(date 1524568269473)
++++ src/java/com/rasha/model/Books.java	(date 1524568269473)
+@@ -0,0 +1,59 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.model;
++
++/**
++ *
++ * @author @fahad
++ */
++public class Books {
++
++    private String isbn;
++    private String bookname;
++    private String authorname;
++    private String category;
++    private int selfno;
++
++    public String getIsbn() {
++        return isbn;
++    }
++
++    public void setIsbn(String isbn) {
++        this.isbn = isbn;
++    }
++
++    public String getBookname() {
++        return bookname;
++    }
++
++    public void setBookname(String bookname) {
++        this.bookname = bookname;
++    }
++
++    public String getAuthorname() {
++        return authorname;
++    }
++
++    public void setAuthorname(String authorname) {
++        this.authorname = authorname;
++    }
++
++    public String getCategory() {
++        return category;
++    }
++
++    public void setCategory(String category) {
++        this.category = category;
++    }
++
++    public int getSelfno() {
++        return selfno;
++    }
++
++    public void setSelfno(int selfno) {
++        this.selfno = selfno;
++    }
++}
+Index: src/java/com/rasha/model/Borrow.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/model/Borrow.java	(date 1524568269517)
++++ src/java/com/rasha/model/Borrow.java	(date 1524568269517)
+@@ -0,0 +1,72 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.model;
++
++import java.sql.Date;
++
++/**
++ *
++ * @author @fahad
++ */
++public class Borrow {
++
++    private int id;
++    private String studentId;
++    private String bookId;
++    private Date borrowDate;
++    private Date returnDate;
++    private int status;
++
++    public int getId() {
++        return id;
++    }
++
++    public void setId(int id) {
++        this.id = id;
++    }
++
++    public String getStudentId() {
++        return studentId;
++    }
++
++    public void setStudentId(String studentId) {
++        this.studentId = studentId;
++    }
++
++    public String getBookId() {
++        return bookId;
++    }
++
++    public void setBookId(String bookId) {
++        this.bookId = bookId;
++    }
++
++    public Date getBorrowDate() {
++        return borrowDate;
++    }
++
++    public void setBorrowDate(Date borrowDate) {
++        this.borrowDate = borrowDate;
++    }
++
++    public Date getReturnDate() {
++        return returnDate;
++    }
++
++    public void setReturnDate(Date returnDate) {
++        this.returnDate = returnDate;
++    }
++
++    public int getStatus() {
++        return status;
++    }
++
++    public void setStatus(int status) {
++        this.status = status;
++    }
++    
++    
++}
+Index: src/java/com/rasha/model/BRCombo.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/model/BRCombo.java	(date 1524568269085)
++++ src/java/com/rasha/model/BRCombo.java	(date 1524568269085)
+@@ -0,0 +1,89 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.model;
++
++import java.sql.Date;
++
++/**
++ *
++ * @author @fahad
++ */
++public class BRCombo {
++
++    private int id;
++    private String title;
++    private String authorName;
++    private String studentId;
++    private String studentName;
++    private Date borrowDate;
++    private Date returnDate;
++    private int status;
++
++    public int getId() {
++        return id;
++    }
++
++    public void setId(int id) {
++        this.id = id;
++    }
++
++    public String getTitle() {
++        return title;
++    }
++
++    public void setTitle(String title) {
++        this.title = title;
++    }
++
++    public String getAuthorName() {
++        return authorName;
++    }
++
++    public void setAuthorName(String authorName) {
++        this.authorName = authorName;
++    }
++
++    public String getStudentId() {
++        return studentId;
++    }
++
++    public void setStudentId(String studentId) {
++        this.studentId = studentId;
++    }
++
++    public String getStudentName() {
++        return studentName;
++    }
++
++    public void setStudentName(String studentName) {
++        this.studentName = studentName;
++    }
++
++    public Date getBorrowDate() {
++        return borrowDate;
++    }
++
++    public void setBorrowDate(Date borrowDate) {
++        this.borrowDate = borrowDate;
++    }
++
++    public Date getReturnDate() {
++        return returnDate;
++    }
++
++    public void setReturnDate(Date returnDate) {
++        this.returnDate = returnDate;
++    }
++
++    public int getStatus() {
++        return status;
++    }
++
++    public void setStatus(int status) {
++        this.status = status;
++    }
++
++}
+Index: src/java/com/rasha/model/Return.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/model/Return.java	(date 1524568269581)
++++ src/java/com/rasha/model/Return.java	(date 1524568269581)
+@@ -0,0 +1,61 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.model;
++
++import java.sql.Date;
++
++/**
++ *
++ * @author @fahad
++ */
++public class Return {
++
++    private int id;
++    private String studentId;
++    private String bookId;
++    private Date returnDate;
++    private int fine;
++
++    public int getId() {
++        return id;
++    }
++
++    public void setId(int id) {
++        this.id = id;
++    }
++
++    public String getStudentId() {
++        return studentId;
++    }
++
++    public void setStudentId(String studentId) {
++        this.studentId = studentId;
++    }
++
++    public String getBookId() {
++        return bookId;
++    }
++
++    public void setBookId(String bookId) {
++        this.bookId = bookId;
++    }
++
++    public Date getReturnDate() {
++        return returnDate;
++    }
++
++    public void setReturnDate(Date returnDate) {
++        this.returnDate = returnDate;
++    }
++
++    public int getFine() {
++        return fine;
++    }
++
++    public void setFine(int fine) {
++        this.fine = fine;
++    }
++}
+Index: src/java/com/rasha/model/Students.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/model/Students.java	(date 1524568268664)
++++ src/java/com/rasha/model/Students.java	(date 1524568268664)
+@@ -0,0 +1,89 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.model;
++
++/**
++ *
++ * @author @fahad
++ */
++public class Students {
++
++    private int id, gender, ms;
++    private String firstName, lastName, email, phoneNo, address, dept;
++
++    public int getId() {
++        return id;
++    }
++
++    public void setId(int id) {
++        this.id = id;
++    }
++
++    public int getGender() {
++        return gender;
++    }
++
++    public void setGender(int gender) {
++        this.gender = gender;
++    }
++
++    public int getMs() {
++        return ms;
++    }
++
++    public void setMs(int ms) {
++        this.ms = ms;
++    }
++
++    public String getFirstName() {
++        return firstName;
++    }
++
++    public void setFirstName(String firstName) {
++        this.firstName = firstName;
++    }
++
++    public String getLastName() {
++        return lastName;
++    }
++
++    public void setLastName(String lastName) {
++        this.lastName = lastName;
++    }
++
++    public String getEmail() {
++        return email;
++    }
++
++    public void setEmail(String email) {
++        this.email = email;
++    }
++
++    public String getPhoneNo() {
++        return phoneNo;
++    }
++
++    public void setPhoneNo(String phoneNo) {
++        this.phoneNo = phoneNo;
++    }
++
++    public String getAddress() {
++        return address;
++    }
++
++    public void setAddress(String address) {
++        this.address = address;
++    }
++
++    public String getDept() {
++        return dept;
++    }
++
++    public void setDept(String dept) {
++        this.dept = dept;
++    }
++
++}
+Index: src/java/com/rasha/model/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/model/User.java	(date 1524568269240)
++++ src/java/com/rasha/model/User.java	(date 1524568269240)
+@@ -0,0 +1,40 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.model;
++
++/**
++ *
++ * @author @fahad
++ */
++public class User {
++
++    private String username, password, email;
++
++    public String getUsername() {
++        return username;
++    }
++
++    public void setUsername(String username) {
++        this.username = username;
++    }
++
++    public String getPassword() {
++        return password;
++    }
++
++    public void setPassword(String password) {
++        this.password = password;
++    }
++
++    public String getEmail() {
++        return email;
++    }
++
++    public void setEmail(String email) {
++        this.email = email;
++    }
++
++}
+Index: src/java/com/rasha/util/Database.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/java/com/rasha/util/Database.java	(date 1524568946476)
++++ src/java/com/rasha/util/Database.java	(date 1524568946476)
+@@ -0,0 +1,35 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package com.rasha.util;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++
++/**
++ *
++ * @author fahad
++ */
++public class Database {
++
++    static final String DATABASE = "lbms";
++
++    private static String URL = "jdbc:mysql://localhost:3306/" + DATABASE;
++    private static String USER = "root";
++    private static String PASS = "";
++
++    public static Connection getConnection() {
++
++        Connection connection = null;
++
++        try {
++            Class.forName("com.mysql.jdbc.Driver");
++            connection = DriverManager.getConnection(URL, USER, PASS);
++        } catch (Exception e) {
++            System.out.println("EXCEPTION: " + e);
++        }
++        return connection;
++    }
++}
+Index: web/css/login.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/css/login.css	(date 1488737717000)
++++ web/css/login.css	(date 1488737717000)
+@@ -0,0 +1,27 @@
++*{margin:0px;padding:0px}
++body{
++    background: url(../images/pattern.png) repeat fixed;
++}
++.login_box{
++    margin:150px auto;
++    border-radius:12px;
++    width:400px;height:300px;
++    background-color:#F5F5F5;
++    box-shadow: #142E2E 5px 5px 5px;
++}
++.login_box{}
++.login_box h1{
++    line-height: 60px;
++    margin-left: 140px;}
++.login_box h2 {
++    border-bottom: 1px solid;
++    margin-bottom: 50px;
++    margin-left: 40px;
++    padding-bottom: 10px;
++    width: 307px;}
++.login_box form{margin-left: 100px;}
++.login_box form input[type=submit]{
++    margin-left: 94px;
++    margin-top: 5px;
++}
++.login_box form span{padding-right: 25px;}
+Index: web/css/style.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/css/style.css	(date 1488737717000)
++++ web/css/style.css	(date 1488737717000)
+@@ -0,0 +1,63 @@
++body {
++    background: url(../images/pattern.png) repeat scroll 0 0 #f5f5f5;
++    color: #484848 fixed;
++    cursor: default;
++    font-family: "Trebuchet MS",Arial,Verdana;
++    font-size: 100%;
++    line-height: 16px;
++}
++#header{
++    text-align:center;
++    position:fixed;
++}
++
++#footer{
++    width:100%;
++    text-align:center;
++    position:fixed;
++}
++
++td{ text-align:center;}	
++a{ text-decoration:none; color:blue;}	
++
++#box{
++    background-color: white;
++    border-radius: 12px;
++    box-shadow: 1px 1px 4px #000;    
++    padding: 40px;
++    text-align: left;
++    width: 60%;
++}
++
++#info{
++    color:red;
++    top:5px;
++    position:fixed;
++}
++
++
++.button{
++
++    box-shadow:inset 0px 1px 0px 0px #ffffff;
++    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );    
++    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
++    background-color:#ededed;    
++    border-radius:6px;
++    border:1px solid #dcdcdc;
++    display:inline-block;
++    color:#777777;
++    font-family:arial;
++    font-size:15px;
++    font-weight:bold;
++    padding:9px 42px;
++    text-decoration:none;
++    text-shadow:1px 1px 0px #ffffff;    
++}.button:hover {
++    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
++    background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
++    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
++    background-color:#dfdfdf;
++}.button:active {
++    position:relative;
++    top:1px;
++}
+Index: web/META-INF/context.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/META-INF/context.xml	(date 1488737717000)
++++ web/META-INF/context.xml	(date 1488737717000)
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<Context antiJARLocking="true" path="/LBMS"/>
+Index: web/WEB-INF/web.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/WEB-INF/web.xml	(date 1488737717000)
++++ web/WEB-INF/web.xml	(date 1488737717000)
+@@ -0,0 +1,60 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
++    <servlet>
++        <servlet-name>Login</servlet-name>
++        <servlet-class>com.rasha.controller.LoginController</servlet-class>
++    </servlet>
++    <servlet>
++        <servlet-name>StudentsController</servlet-name>
++        <servlet-class>com.rasha.controller.StudentsController</servlet-class>
++    </servlet>
++    <servlet>
++        <servlet-name>BooksController</servlet-name>
++        <servlet-class>com.rasha.controller.BooksController</servlet-class>
++    </servlet>
++    <servlet>
++        <servlet-name>Faces Servlet</servlet-name>
++        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
++        <load-on-startup>1</load-on-startup>
++    </servlet>
++    <servlet>
++        <servlet-name>BorrowController</servlet-name>
++        <servlet-class>com.rasha.controller.BorrowController</servlet-class>
++    </servlet>
++    <servlet>
++        <servlet-name>ReturnController</servlet-name>
++        <servlet-class>com.rasha.controller.ReturnController</servlet-class>
++    </servlet>
++    <servlet-mapping>
++        <servlet-name>Login</servlet-name>
++        <url-pattern>/Login</url-pattern>
++    </servlet-mapping>
++    <servlet-mapping>
++        <servlet-name>StudentsController</servlet-name>
++        <url-pattern>/StudentsController</url-pattern>
++    </servlet-mapping>
++    <servlet-mapping>
++        <servlet-name>BooksController</servlet-name>
++        <url-pattern>/BooksController</url-pattern>
++    </servlet-mapping>
++    <servlet-mapping>
++        <servlet-name>Faces Servlet</servlet-name>
++        <url-pattern>/faces/*</url-pattern>
++    </servlet-mapping>
++    <servlet-mapping>
++        <servlet-name>BorrowController</servlet-name>
++        <url-pattern>/BorrowController</url-pattern>
++    </servlet-mapping>
++    <servlet-mapping>
++        <servlet-name>ReturnController</servlet-name>
++        <url-pattern>/ReturnController</url-pattern>
++    </servlet-mapping>
++    <session-config>
++        <session-timeout>
++            30
++        </session-timeout>
++    </session-config>
++    <welcome-file-list>
++        <welcome-file>login.jsp</welcome-file>
++    </welcome-file-list>
++</web-app>
+Index: web/about.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/about.jsp	(date 1524570268751)
++++ web/about.jsp	(date 1524570268751)
+@@ -0,0 +1,24 @@
++
++
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel="stylesheet" type="text/css" href="css/style.css" />
++        <title>About Page</title>
++    </head>
++    <body>
++        <%@include file="header.jsp" %>
++
++    <center>
++        <div id = "box">            
++            <article>
++                <h1>Dark Ocean</h1>
++                <p>ICT ,MBSTU@@ fahad.ahmed.ict13@gmail.com</p>
++            </article>
++            <
++        </div>
++    </center>
++</body>
++</html>
+Index: web/books.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/books.jsp	(date 1524569500637)
++++ web/books.jsp	(date 1524569500637)
+@@ -0,0 +1,66 @@
++
++
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel="stylesheet" type="text/css" href="css/style.css" />
++        <title>Books Page</title>
++    </head>
++    <body>
++        <%@include file="header.jsp" %>
++        <c:if test="${sessionScope.username != null && sessionScope.username !=''}">
++        <center>
++            <div id = "box">
++
++                <h3>Welcome to Books Page </h3>
++                <ul>                
++                    <li><a href="newbook.jsp">Add New Book</a></li>
++                </ul>
++
++                <!--<input type="text" name="searchbox" placeholder="Enter to search..."/>
++                <input type="submit" name ="searchbutton" value="Search"/><br/><br/>-->
++
++                <c:if scope="request" test="${exists == 'yes'}" var="reg">
++                    <font color="red"><b>*** Id should be unique!!</b></font><br/><br/>
++                </c:if>
++                <c:if scope="request" test="${flag == 'reg'}" var="reg">
++                    <font color="green"><b>*** New Book Added!!</b></font><br/><br/>
++                </c:if>
++                <c:if scope="request" test="${flag == 'update'}" var="upd">
++                    <font color="green"><b>*** Update Successful!!</b></font><br/><br/>
++                </c:if>
++
++                <table border="1" style="width: 100%">
++                    <thead>
++                        <tr>
++                            <th>ISBN NO.</th>
++                            <th>Title</th>
++                            <th>Author Name</th>
++                            <th>Category</th>
++                            <th>Self NO.</th>                    
++                            <th colspan="2">Action</th>
++                        </tr>
++                    </thead>
++                    <tbody>
++                        <c:forEach items="${allBooks}" var="book">
++                            <tr <c:if test="${isbn == book.isbn}"> style="background-color: gainsboro" </c:if>>
++                                <td><c:out value="${book.isbn}"/></td>
++                                <td><c:out value="${book.bookname}"/></td>
++                                <td><c:out value="${book.authorname}"/></td>
++                                <td><c:out value="${book.category}"/></td>
++                                <td><c:out value="${book.selfno}"/></td>
++                                <td><a href="BooksController?action=update&isbn=${book.isbn}">Update</a></td>
++                                <td><a href="BooksController?action=delete&isbn=${book.isbn}">Delete</a></td>
++                            </tr>
++                        </c:forEach>
++                    </tbody>
++                </table>
++            </div>
++        </center>
++    </c:if>
++</body>
++</html>
+Index: web/borrow.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/borrow.jsp	(date 1524569500875)
++++ web/borrow.jsp	(date 1524569500875)
+@@ -0,0 +1,51 @@
++
++
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel="stylesheet" type="text/css" href="css/style.css" />
++        <title>Borrow Page</title>
++    </head>
++    <body>
++        <%@include file="header.jsp" %>
++        <c:if test="${sessionScope.username != null && sessionScope.username !=''}">
++        <center>
++            <div id = "box">
++                <h1>Borrow Books!!!</h1>
++
++                <c:if test="${flag}"><font color="green"><b>*** Borrow Sucessfull!!!</b></font><br/><br/> </c:if>
++
++                    <form action="BorrowController">
++                        <center>
++                            <table>
++                                <tbody>
++                                    <tr>
++                                        <td>Student Id: </td>
++                                        <td>
++                                            <input type="text" name="studentid" required placeholder="Put an Integer..." style="width: 350px"/>
++                                        </td>
++                                    </tr>
++                                    <tr>
++                                        <td>ISBN NO.: </td>
++                                        <td>
++                                            <input type="text" name="bookid" required style="width: 350px"/>
++                                        </td>
++                                    </tr>
++                                    <tr>
++                                        <td></td>
++                                        <td>
++                                            <input type="submit" name="submit" value="Submit"/>                                
++                                        </td>
++                                    </tr>
++                                </tbody>
++                            </table>
++                        </center>
++                    </form>
++                </div>
++            </center>
++    </c:if>
++</body>
++</html>
+Index: web/confirmborrow.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/confirmborrow.jsp	(date 1524569500846)
++++ web/confirmborrow.jsp	(date 1524569500846)
+@@ -0,0 +1,92 @@
++
++
++<%@page import="java.util.Calendar"%>
++<%@page import="java.text.SimpleDateFormat"%>
++<%@page import="java.text.DateFormat"%>
++<%@page import="java.util.Date"%>
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel="stylesheet" type="text/css" href="css/style.css" />
++        <title>Confirm Borrow Page</title>
++    </head>
++    <body>
++        <%@include file="header.jsp" %>
++        <c:if test="${sessionScope.username != null && sessionScope.username !=''}">
++        <center>
++            <div id = "box">
++                <h1>Confirm Borrow</h1>
++
++                <form action="BorrowController">
++                    <table>
++                        <thead>
++                            <tr><th><u>Student Info:</u></th></tr>
++                        </thead>
++                        <tbody>
++                            <tr><td>Id:</td><td>${student.id}</td></tr>
++                            <tr><td>Name:</td><td>${student.firstName} ${student.lastName}</td></tr>
++                            <tr><td>E-mail:</td><td>${student.email}</td></tr>
++                            <tr><td>Phone No:</td><td>${student.phoneNo}</td></tr>
++                            <tr><td>Dept:</td><td>${student.dept}</td></tr>
++                            <tr><td>Address:</td><td>${student.address}</td></tr>
++                        </tbody>
++                    </table>
++
++                    <table>
++                        <thead>
++                            <tr><th><u>Book Info:</u></th></tr>
++                        </thead>
++                        <tbody>
++                            <tr><td>ISBN:</td><td>${book.isbn}</td></tr>
++                            <tr><td>Title:</td><td>${book.bookname}</td></tr>
++                            <tr><td>Author(s):</td><td>${book.authorname}</td></tr>
++                            <tr><td>Category:</td><td>${book.category}</td></tr>
++                            <tr><td>Self No:</td><td>${book.selfno}</td></tr>
++                        </tbody>
++                    </table>
++
++                    <table>
++                        <thead>
++                            <tr><th><u>Borrow Info:</u></th></tr>
++                        </thead>
++                        <tbody>
++                            <tr>
++                                <td>Borrow Date: </td>
++                                <td>
++                                    <%
++                                        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
++                                        Calendar calobj = Calendar.getInstance();
++                                        String borrowdate = df.format(calobj.getTime());
++                                        out.println(borrowdate);
++                                    %>
++                                </td>
++                            </tr>
++                            <tr>
++                                <td>Return within: </td>
++                                <td>
++                                    <%
++                                        calobj.add(Calendar.DATE, 7);
++                                        String returndate = df.format(calobj.getTime());
++                                        out.println(returndate);
++                                    %>
++                                </td>
++                            </tr>  
++                        </tbody>
++                    </table>
++
++                    <input type="hidden" name="borrowdate" value="<%=borrowdate%>" />
++                    <input type="hidden" name="returndate" value="<%=returndate%>" />
++                    <input type="hidden" name="studentid" value="${student.id}" />
++                    <input type="hidden" name="bookid" value="${book.isbn}" />
++
++                    <input type="submit" name="confirm" value="Confirm"/>
++                    <input type="submit" name="notconfirm" value="Cancel"/>
++                </form>
++            </div>
++        </center>
++    </c:if>
++</body>
++</html>
+Index: web/confirmreturn.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/confirmreturn.jsp	(date 1524569501030)
++++ web/confirmreturn.jsp	(date 1524569501030)
+@@ -0,0 +1,13 @@
++
++
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <title>Return Confirm</title>
++    </head>
++    <body>
++        
++    </body>
++</html>
+Index: web/exception.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/exception.jsp	(date 1524569501074)
++++ web/exception.jsp	(date 1524569501074)
+@@ -0,0 +1,13 @@
++
++
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <title>Exception Page</title>
++    </head>
++    <body>
++        <h1>Hello World!</h1>
++    </body>
++</html>
+Index: web/header.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/header.jsp	(date 1524569500695)
++++ web/header.jsp	(date 1524569500695)
+@@ -0,0 +1,14 @@
++
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++
++<center>
++    <h1>HSTU Library Management System</h1>
++
++    <a href="home.jsp" class="button">Home</a>
++    <a href="StudentsController" class="button">Students</a>
++    <a href="BooksController" class="button">Books</a>
++    <a href="borrow.jsp" class="button">Borrow</a>
++    <a href="ReturnController" class="button">Return</a>
++    <a href="about.jsp" class="button">About</a>
++    <a href="logout.jsp" class="button">Logout</a>
++</center><br/>
+Index: web/home.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/home.jsp	(date 1524569755219)
++++ web/home.jsp	(date 1524569755219)
+@@ -0,0 +1,45 @@
++
++
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel="stylesheet" type="text/css" href="css/style.css" />
++        <title>Home</title>
++    </head>
++
++    <body>
++
++        <%@include file="header.jsp" %>
++        <c:if test="${sessionScope.username != null && sessionScope.username !=''}">
++        <center>
++            <div id = "box">
++                <h2>Welcome !!!</h2>
++                <article>
++                    <h3>Activities and Facilities:</h3>
++                    <p>
++                        MBSTU Library is a well furnished multi storied building. It is doing its daily activities by different sections, such as: Acquisition section, Circulation section, Processing section and Reference section which are situated at different location in the Library Building. Administrative section of the library does the administrative activities.
++                        Acquisition Section is always working hard to collect the all kind of required documents of the users. Recently it has collected a great deal of different types of books for different faculties of this university.
++                        Circulation section sets on the ground floor of the library building. All the researchers, students and teachers of this university may borrow their required books as per rule from the Circulation Section for reading the book outside of the library or home. Only those books that are more than 2 copies are available for loan to students/ teachers/ researchers.
++                        Liberal war and Reference section is another important section. It is situated at the first floor and second floor of the building. Teachers, researchers and students may read the rare documents sitting in the Reference Section. It also provides photocopy facility against a nominal fee. Another important service of this section is current awareness service. It regularly sends the list of current received documents to the faculties. 15 Daily newspapers are kept at the 2nd floor of the building. All kind of users can read the journal, daily newspaper and thesis here. There is a cyber center in the Library. All users may use the cyber center against a nominal fee.
++                    </p>
++                    <h3>Mission:</h3>
++                    <p>
++                        The Library’s mission is to provide comprehensive resources and services in support of the research, teaching and learning needs of the University community.
++                    </p>
++                    <h3>Vision:</h3>
++                    <p>
++                        Build up a world-class Knowledge Resource Centre and provide innovative services and collections to the research, teaching and learning communities by using latest technology.
++                    </p>
++                    <h3>Library Hour:</h3>
++                    <p>
++                        The Library shall be opened from 8:00 am to 8:00 pm. It shall be wholly closed on university holidays.
++                    </p>
++                </article>
++            </div>
++        </center>
++    </c:if>
++</body>
++</html>
+Index: web/login.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/login.jsp	(date 1524569501119)
++++ web/login.jsp	(date 1524569501119)
+@@ -0,0 +1,29 @@
++
++
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel = "stylesheet" href = "css/login.css">
++
++        <title>Login</title>
++    </head>
++    <body>
++        <div class = "login_box">
++            <h1>Admin</h1>
++            <h2>Login...</h2>
++            <form action="Login" method="post">
++                <span>Username: </span><input type="text" name="username"/><br/>
++                <span>Password: </span><input type="password" name="password"/><br/>
++                <input type="submit" value="Login"/>
++            </form><br/>
++            <center>
++                <c:if test="${not empty errMsg}">                    
++                    <b>[ N.B.</b><font color="red"> <c:out value="${errMsg}"/></font><b> ]</b>
++                </c:if>
++            </center>
++        </div>
++    </body>
++</html>
+Index: web/logout.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/logout.jsp	(date 1524569500812)
++++ web/logout.jsp	(date 1524569500812)
+@@ -0,0 +1,17 @@
++
++
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <title>Logout Page</title>
++    </head>
++    <body>
++        <%
++            session.setAttribute("username", null);
++            session.invalidate();
++            response.sendRedirect("login.jsp");
++        %>
++    </body>
++</html>
+Index: web/newbook.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/newbook.jsp	(date 1524569500914)
++++ web/newbook.jsp	(date 1524569500914)
+@@ -0,0 +1,79 @@
++
++
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel="stylesheet" type="text/css" href="css/style.css" />
++        <title>New Book Page</title>
++    </head>
++    <body>
++        <%@include file="header.jsp" %>
++        <c:if test="${sessionScope.username != null && sessionScope.username !=''}">
++        <center>
++            <div id = "box">
++                <h2>New Book Arrival</h2>
++                <form action="BooksController">
++                    <center>
++                        <table>
++                            <tbody>
++                                <tr>
++                                    <td>ISBN: </td>
++                                    <td>
++                                        <input type="text" name="isbn" required
++                                               <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                               readonly value="<c:out value="${book.isbn}"/>"
++                                               <%}%>/>
++                                    </td>
++                                    <td>
++                                        <c:if test="${param.action == 'update'}"><font color="red">(You can't edit this field!!!)</font></c:if>
++                                        </td>
++                                    </tr>
++                                    <tr>
++                                        <td>Book's Title:</td>
++                                        <td><input type="text" name="bookname" required
++                                            <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                            value="<c:out value="${book.bookname}"/>"
++                                            <%}%>/>
++                                    </td>
++                                </tr>
++                                <tr>
++                                    <td>Author's Name:</td>
++                                    <td><input type="text" name="authorname" required
++                                               <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                               value="<c:out value="${book.authorname}"/>"
++                                               <%}%>/>
++                                    </td>
++                                </tr>
++                                <tr>
++                                    <td>Category:</td>
++                                    <td> <input type="text" name="category"
++                                                <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                                value="<c:out value="${book.category}"/>"
++                                                <%}%>/>
++                                    </td>
++                                <tr>
++                                    <td>Self NO.:</td>
++                                    <td><input type="text" name="selfno" required placeholder="Put an Integer..."
++                                               <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                               value="<c:out value="${book.selfno}"/>"
++                                               <%}%>/>
++                                    </td>
++                                </tr>
++                                <tr>
++                                    <td></td>
++                                    <td>
++                                        <input type="submit" name="${param.action == 'update' ? 'update' : 'create'}" value="${param.action == 'update' ? 'Update' : 'Create'}"/>
++                                    </td>
++                                </tr>
++                            </tbody>
++                        </table>
++                    </center>
++                </form>
++            </div>
++        </center>
++    </c:if>
++</body>
++</html>
+Index: web/newjsp.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/newjsp.jsp	(date 1488737717000)
++++ web/newjsp.jsp	(date 1488737717000)
+@@ -0,0 +1,20 @@
++<%!
++    int pageCount = 0;
++
++    void addCount() {
++        pageCount++;
++    }
++%>
++<% addCount();%>
++<html>
++    <head>
++        <title>The include Directive Example</title>
++    </head>
++    <body>
++    <center>
++        <h2>The include Directive Example</h2>
++        <p>This site has been visited <%= pageCount%> times.</p>
++    </center>
++    <br/><br/>
++</body>
++</html>
+\ No newline at end of file
+Index: web/newstudent.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/newstudent.jsp	(date 1524569500993)
++++ web/newstudent.jsp	(date 1524569500993)
+@@ -0,0 +1,105 @@
++
++
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel="stylesheet" type="text/css" href="css/style.css" />
++        <title>New Student Page</title>
++    </head>
++    <body>
++        <%@include file="header.jsp" %>
++        <c:if test="${sessionScope.username != null && sessionScope.username !=''}">
++        <center>
++            <div id = "box">
++                <h2>Student Registration</h2>
++                <form action="StudentsController">
++                    <center>
++                        <table>
++                            <tbody>
++                                <tr>
++                                    <td>Id:</td>
++                                    <td>
++                                        <input type="text" name="id" required placeholder="Id should be an integer..."
++                                               <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                               readonly value="<c:out value="${student.id}"/>"
++                                               <%}%> style="width: 200px"/>                                    
++                                    </td>
++                                    <td>
++                                        <c:if test="${param.action == 'update'}"><font color="red">(You can't edit this field!!!)</font></c:if>
++                                        </td>
++                                    </tr>
++                                    <tr>
++                                        <td>First Name:</td>
++                                        <td><input type="text" name="firstname" required
++                                            <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                            value="<c:out value="${student.firstName}"/>"
++                                            <%}%> style="width: 200px"/>
++                                    </td>
++                                </tr>
++                                <tr>
++                                    <td>Last Name:</td>
++                                    <td><input type="text" name="lastname"
++                                               <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                               value="<c:out value="${student.lastName}"/>"
++                                               <%}%> style="width: 200px"/>
++                                    </td>
++                                </tr>
++                                <tr>
++                                    <td>E-mail:</td>
++                                    <td> <input type="email" name="email"
++                                                <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                                value="<c:out value="${student.email}"/>"
++                                                <%}%> style="width: 200px"/>
++                                    </td>
++                                <tr>
++                                    <td>Phone NO.:</td>
++                                    <td><input type="text" name="phoneno"
++                                               <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                               value="<c:out value="${student.phoneNo}"/>"
++                                               <%}%> style="width: 200px"/>
++                                    </td>
++                                </tr>
++                                <tr>
++                                    <td>Address:</td>
++                                    <td><input type="text" name="address"
++                                               <% if (request.getParameter("action") != null && request.getParameter("action").equals("update")) {%>
++                                               value="<c:out value="${student.address}"/>"
++                                               <%}%> style="width: 200px"/>
++                                    </td>
++                                </tr>
++                                <tr>
++                                    <td>Gender: </td>
++                                    <td>
++                                        <input type="radio" name="gender" value="1" <c:if test="${action == update and student.gender == 1 or empty action}">checked</c:if>/>Male
++                                        <input type="radio" name="gender" value="2" <c:if test="${action == update and student.gender == 2}">checked</c:if>/>Female
++                                        </td>
++                                    </tr>
++                                    <tr>
++                                        <td>Marital Status: </td>
++                                        <td>
++                                            <input type="radio" name="ms" value="1" <c:if test="${action == update and student.ms == 1 or empty action}">checked</c:if>/> Married
++                                        <input type="radio" name="ms" value="2" <c:if test="${action == update and student.ms == 2}">checked</c:if>/> Unmarried
++                                        </td>
++                                    </tr>
++                                    <tr>
++                                        <td>Department:</td>
++                                        <td><input type="text" name="dept" required value="${student.dept}" style="width: 200px"/></td>
++                                </tr>
++                                <tr>
++                                    <td></td>
++                                    <td>
++                                        <input type="submit" name="${param.action == 'update' ? 'update' : 'create'}" value="${param.action == 'update' ? 'Update' : 'Create'}"/>                                        
++                                    </td>
++                                </tr>
++                            </tbody>
++                        </table>
++                    </center>
++                </form>
++            </div>
++        </center>
++    </c:if>
++</body>
++</html>
+Index: web/return.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/return.jsp	(date 1524569500739)
++++ web/return.jsp	(date 1524569500739)
+@@ -0,0 +1,92 @@
++
++
++<%@page import="java.text.DateFormat"%>
++<%@page import="java.util.Calendar"%>
++<%@page import="java.time.Instant"%>
++<%@page import="java.text.SimpleDateFormat"%>
++<%@page import="java.util.Date"%>
++<%@page import="java.util.concurrent.TimeUnit"%>
++<%@page import="com.rasha.model.Borrow"%>
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel="stylesheet" type="text/css" href="css/style.css" />
++        <title>Return Page</title>
++    </head>
++    <body>
++        <%@include file="header.jsp" %>
++        <c:if test="${sessionScope.username != null && sessionScope.username !=''}">
++        <center>
++            <div id = "box">
++                <h3>Return Books </h3>
++                <c:if test="${flag}"><font color="green"><b>*** Book Return Sucessfull!!!</b></font><br/><br/> </c:if>
++
++                    <input type="text" name="searchbox" placeholder="Enter to search..."/>
++                    <input type="submit" name ="searchbutton" value="Search"/><br/><br/>
++
++                    <table border="1" style="width: 100%">
++                        <thead>
++                            <tr>
++                                <th>Borrow Id</th>
++                                <th>Title</th>
++                                <th>Author Name</th>
++                                <th>Student Id</th>
++                                <th>Student Name</th>
++                                <th>Borrow Date</th>
++                                <th>Deadline</th>
++                                <th>Fine</th>
++                                <th>Action</th>
++                            </tr>
++                        </thead>
++                        <tbody>
++                        <c:forEach var="br" items="${allBr}">
++                            <tr>
++                                <td><c:out value="${br.id}"/></td>
++                                <td><c:out value="${br.title}"/></td>
++                                <td><c:out value="${br.authorName}"/></td>
++                                <td><c:out value="${br.studentId}"/></td>
++                                <td><c:out value="${br.studentName}"/></td>
++                                <td><c:out value="${br.borrowDate}"/></td>
++                                <td><c:out value="${br.returnDate}"/></td>
++
++                                <c:set var="borrowDate" value="${br.borrowDate}"/>
++                                <c:set var="returnDate" value="${br.returnDate}"/>
++
++                                <td>
++                                    <%
++                                        Date borrowDate = (Date) new SimpleDateFormat("yyyy-MM-dd").parse(pageContext.getAttribute("borrowDate").toString());
++                                        Date returnDate = (Date) new SimpleDateFormat("yyyy-MM-dd").parse(pageContext.getAttribute("returnDate").toString());
++                                        Date currentDate = new Date();
++
++                                        int diffInDays = (int) ((currentDate.getTime() - borrowDate.getTime()) / (1000 * 60 * 60 * 24));
++                                        pageContext.setAttribute("diffInDays", diffInDays);
++
++                                        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
++                                        Calendar calobj = Calendar.getInstance();
++                                        String returnedDate = df.format(calobj.getTime());
++                                        pageContext.setAttribute("returnDate", returnedDate);
++                                    %>
++                                    <c:choose>
++                                        <c:when test="${diffInDays > 7}">
++                                            <c:set var="fine" value="${(diffInDays - 7) * 5}"/>                                    
++                                        </c:when>
++                                        <c:otherwise>
++                                            <c:set var="fine" value="${0}"/>                                    
++                                        </c:otherwise>
++                                    </c:choose>
++                                    <c:out value="${fine}"/>
++                                </td>
++                                <td><a href="ReturnController?id=${br.id}&fine=${fine}&returndate=${returnDate}">Return</a></td>
++                            </tr>
++                        </c:forEach>
++                    </tbody>
++                </table>   
++            </div>
++        </center>
++    </c:if>
++</body>
++</html>
+Index: web/students.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/students.jsp	(date 1524569500774)
++++ web/students.jsp	(date 1524569500774)
+@@ -0,0 +1,77 @@
++
++
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@page import="java.sql.ResultSet"%>
++<%@page import="java.sql.DriverManager"%>
++<%@page import="java.sql.Statement"%>
++<%@page import="java.sql.PreparedStatement"%>
++<%@page import="java.sql.Connection"%>
++<%@page contentType="text/html" pageEncoding="UTF-8"%>
++<!DOCTYPE html>
++<html>
++    <head>
++        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
++        <link rel="stylesheet" type="text/css" href="css/style.css" />
++        <title>Students Page</title>
++    </head>
++    <body>
++        <%@include file="header.jsp" %>
++        <c:if test="${sessionScope.username != null && sessionScope.username !=''}">
++        <center>
++            <div id = "box">
++                <h3>Welcome to Students Page </h3>
++                <ul>
++                    <li><a href="newstudent.jsp">Student Registration</a></li>
++                </ul>
++
++<!--                <input type="text" name="searchbox" placeholder="Enter to search..."/>
++                <input type="submit" name ="searchbutton" value="Search"/><br/><br/>-->
++
++                <c:if scope="request" test="${exists == 'yes'}" var="reg">
++                    <font color="red"><b>*** Id should be unique!!</b></font><br/><br/>
++                </c:if>
++                <c:if scope="request" test="${flag == 'reg'}" var="reg">
++                    <font color="green"><b>*** Registration Successful!!</b></font><br/><br/>
++                </c:if>
++                <c:if scope="request" test="${flag == 'update'}" var="upd">
++                    <font color="green"><b>*** Update Successful!!</b></font><br/><br/>
++                </c:if>
++
++                <table border="1">
++                    <thead>
++                        <tr>
++                            <th>Id</th>
++                            <th>First Name</th>
++                            <th>Last Name</th>
++                            <th>Email</th>
++                            <th>Phone No</th>
++                            <th>Address</th>
++                            <th>Gender</th>
++                            <th>Marital Status</th>
++                            <th>Department</th>
++                            <th colspan="2">Action</th>
++                        </tr>
++                    </thead>
++                    <tbody>
++                        <c:forEach items="${allStudents}" var="student">
++                            <tr <c:if test="${id == student.id}"> style="background-color: gainsboro" </c:if>>
++                                <td><c:out value="${student.id}"/></td>
++                                <td><c:out value="${student.firstName}"/></td>
++                                <td><c:out value="${student.lastName}"/></td>
++                                <td><c:out value="${student.email}"/></td>
++                                <td><c:out value="${student.phoneNo}"/></td>
++                                <td><c:out value="${student.address}"/></td>
++                                <td><c:out value="${student.gender == 1 ? 'Male' : 'Female'}"/></td>
++                                <td><c:out value="${student.ms == 1 ? 'Married' : 'Unmarried'}"/></td>
++                                <td><c:out value="${student.dept}"/></td>
++                                <td><a href="StudentsController?action=update&id=${student.id}">Update</a></td>
++                                <td><a href="StudentsController?action=delete&id=${student.id}">Delete</a></td>
++                            </tr>
++                        </c:forEach>
++                    </tbody>
++                </table>
++            </div>
++        </center>
++    </c:if>
++</body>
++</html>
+Index: LMS.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- LMS.iml	(date 1524570295130)
++++ LMS.iml	(date 1524570295130)
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="WEB_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$" />
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+diff --git web/images/pattern.jpg web/images/pattern.jpg
+new file mode 100644
+index 0000000000000000000000000000000000000000..e95293fd8fe2fff67e1919d801032a3123a94a4c
+GIT binary patch
+literal 13137
+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
+zz4-uOfNT>M%0A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
+
+diff --git web/images/pattern.png web/images/pattern.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..0660191490f9410cfb724427dbadd9ca3d1ef0eb
+GIT binary patch
+literal 2945
+zc$@)&3x4#8P)<h;3K|Lk000e1NJLTq000UA000UI1^@s7`ZfP600009a7bBm000XU
+z000XU0RWnu7ytkYPiaF#P*7-ZbZ>KLZ*U+<Lqi~Na&Km7Y-Iodc-oy)XH-+^7Crag
+z^g>IBfRsybQWXdwQbLP>6p<z>Aqfylh#{fb6;Z(vMMVS~$e@S=j*ftg6;Uh<iVD~V
+z<RPMtgQJLw%KPDaqifc@_vX$1wbwr9tn;0-&j-K=43<bUQ8j=JsX`tR;Dg7+#^K~H
+zK!FM*Z~zbpvt%K2{UZSY_<lS*D<Z%Lz5oGu(+dayz)hRLFdT>f59&ghTmgWD0l;*T
+zI7<kC6aYYajzXpYKt=(8otP$50H6c_V9R4-;{Z@C0AMG7=F<Rxo%or10RUT+Ar%3j
+zkpLhQWr#!oXgdI`&sK^>09Y^p6lP1rIRMx#05C~cW=H_Aw*bJ-5DT&Z2n+x)QHX^p
+z00esgV8|mQcmRZ%02D^@S3L16t`O%c004NIvOKvYIYoh62rY33S640`D9%Y2D-<?i
+z0%4j!F2Z@488U%158(66005wo6%pWr^Zj_v4zAA5HjcIqUoGmt2LB>rV&neh&#Q1i
+z007~1e$oCcFS8neI|hJl{-P!B1ZZ9hpmq0)X0i`JwE&>$+E?>%_<lS*MWK+n+1cgf
+z<k(8YLR(?VSAG6x!e78w{cQPuJpA|d;J)G{fihizM+Erb!p!tcr5w+a34~(Y=8s4G
+zw+sLL9n&JjNn*KJDiq^U5^;`1nvC-@r6P$!k}1U{(*I=Q-z@tBKHoI}uxdU5dyy@u
+zU1J0GOD7Ombim^G008p4Z^6_k2m^p<gW=D2|L;HjN1!DDfM!XOaR2~bL?kX$%CkSm
+z2mk;?pn)o|K^yeJ7%adB9Ki+L!3+FgHiSYX#KJ-lLJDMn9CBbOtb#%)hRv`YDqt_v
+zKpix|QD}yfa1JiQRk#j4a1Z)n2%f<xynzV>LC6RbVIkUx0b+_+BaR3cnT7Zv!AJxW
+zizFb)h!jyGOOZ85F;a?DAXP{m@;!0_Ifq<Ex{*7`05XF7hP+2Hl!3BQJ=6@fL%FCo
+z8iYoo3(#bAF`ADSpqtQgv>H8(HlgRxt7s3}k3K`kFu>>-2Q$QMFfPW!La{h336o>X
+zu_CMttHv6zR;&ZNiS=X8v3CR#fknUxHUxJ<AYmRsNLWl*PS{AOARHt#5!wki2?K;t
+z!Y3k=s7tgax)J%r7-BLphge7~Bi0g+6E6^Zh(p9TBoc{3GAFr^0!gu?RMHaCM$&Fl
+zBk3%un>0uoBa_M6WNWeqIg~6QE69c9o#eyhGvpiOA@W-aonk<7r1(?fC{oI5N*U!4
+z<uv66WtcKSRim0x-Ke2d5jBrmLam{;Qm;{ms1r1GnmNsb7D-E`t)i9F8fX`2_i3-_
+zbh;7Ul^#x)&{xvS=|||7=mYe33=M`AgU5(xC>fg=2N-7=cNnjjOr{yriy6mMFgG#l
+znCF=fnQv8CDz++o6_Lscl}eQ+l^ZHARH>?_s@|##Rr6KLRFA1%Q+=*RRWnoLsR`7U
+zt5vF<Q0r40Q)j6=sE4X&sBct1q<&fbi3VB2Ov6t@q*0);U*o*SAPZv|vv@2aYYnT0
+zb%8a+Cb7-ge0D0knEf5Qi#@8Tp*ce{N;6lpQuCB%KL_KOarm5cP6_8Ir<e17iry6O
+zDdH&`rZh~sF=bq9s+O0QSgS~@QL9Jmy*94xr=6y~MY~!1fet~(N+(<=M`w@D1)b+p
+z*;C!83a1uLJv#NSE~;y#8=<>IcfW3@?wFpwUVxrVZ>QdQz32KIeJ}k~{cZZE^+ya?
+z2D1z#2HOnI7(B%_ac?{wFUQ;QQA1tBKtrWrm0_3Rgps+?Jfqb{jYbcQX~taRB;#$y
+zZN{S}1|}gUOHJxc?wV3fxuz+mJ4`!F$IZ;mqRrNsHJd##*D~ju=bP7?-?v~|cv>vB
+zsJ6IeNwVZxrdjT`yl#bBIa#GxRa#xMMy;K#CDyyGyQdMSxlWT#tDe?p!?5wT$+oGt
+z8L;Kp2HUQ-ZMJ=3XJQv;x5ci*?vuTfeY$;({XGW_huIFR9a<fJbF^|4I#xQ~n$Dc=
+zKYhjYmgz5NSkDm8*fZm{6U!;YX`NG>(?@3)XSs8O^N5RyOM=TTmp(3=8^+zpz2r)C
+z^>JO{deZfso3oq3?Wo(Y?l$ge?uXo;%ru`Vo>?<<(8I_>;8Eq#KMS9gFl*neeosSB
+zfoHYnBQIkwkyowPu(zdms`p{<7e4kra-ZWq<2*OsGTvEV%s0Td$hXT+!*8Bnh2KMe
+zBmZRodjHV?r+_5^X9J0WL4jKW`}lf%A-|44I@@LTvf1rHjG(ze6+w@Jt%Bvjts!X0
+z?2xS?_ve_-k<Mujg;0Lz*3buG=3$G&ehepthlN*$KaOySSQ^nWmo<0M+(UEUMEXRQ
+zMBbZcF;6+KElM>iKB_KiJlZ$9G`c^=E@oNG)mWWaNo-3TIW8)$Hg0Ub-~8?KhvJ>$
+z3*&nim@mj(aCxE5!t{lw7O5^0EIO7zOo&c6l<+|iDySBWCGrz@C5{St!X3hAA}`T4
+z(TLbXTq+(;@<=L8dXnssyft|w#WSTW<++3>sgS%(4NTpeI-VAqb|7ssJvzNHgOZVu
+zaYCvgO_R1~>SyL=cFU|~g|hy|Zi}}s9+d~lYqOB71z9Z$wnC=pR9Yz4DhIM>Wmjgu
+z&56o6maCpC&F##y%G;1PobR9i?GnNg;gYtchD%p19a!eQtZF&3JaKv33gZ<8D~47E
+ztUS1iwkmDaPpj=$m#%)jCVEY4fnLGNg2A-`YwHVD3gv};>)hAvT~AmqS>Lr``i7kw
+zJ{5_It`yrBmlc25DBO7E8;5VoznR>Ww5hAaxn$2~(q`%A-YuS64wkBy=9dm`4cXeX
+z4c}I@?e+FW+b@^RDBHV(wnMq2zdX3SWv9u`%{xC-q*U}&`cyXV(%rRT*Z6MH?i+i&
+z_B8C(+grT%{XWUQ+f@NoP1R=AW&26{v-dx)iK^-Nmiuj8txj!m?Z*Ss1N{dh4z}01
+z)YTo*JycSU)+_5r4#yw9{+;i4Ee$peRgIj+;v;ZGdF1K$3E%e~4LaI(jC-u%2h$&R
+z9cLXcYC@Xwnns&bn)_Q~Te?roKGD|d-g^8;+aC{{G(1^(O7m37Y1-+6)01cN&y1aw
+zoqc{T`P^XJqPBbIW6s}d4{z_f5Om?vMgNQEJG?v2T=KYd^0M3I6IZxbny)%vZR&LD
+zJpPl@Psh8QyPB@KTx+@RdcC!KX7}kEo;S|j^u2lU7XQ}Oo;f|;z4Ll+_r>@1-xl3|
+zawq-H%e&ckC+@AhPrP6BK<z=<L*0kfKU@CX*zeqbYQT4(^U>T#_XdT7&;F71j}Joy
+zkC~6lh7E@6o;W@^IpRNZ{ptLtL(gQ-CY~4mqW;US7Zxvm_|@yz&e53Bp_lTPlfP|z
+zrTyx_>lv@x#=^!PzR7qqF<$gm`|ZJZ+;<)Cqu&ot<a{81DF0~rvGr5Xr~8u`lav1h
+z1DNytV>2z=0000WV@Og>004R=004l4008;_004mL004C`008P>0026e000+nl3&F}
+z00022Nkl<Zc-mt8|NlP&0|NsCBa8t600960V*LOAKLew@ygUN{00960f(t1qC@=s3
+z00960LX}rgP=Kg;@ZbRh00030|AI@w0E&7A1qB8M1_p))4<0Z800030|7^>#4FE6*
+zz%cg+X88X#p6FJA)YVFUWh|_!K+iqUZ=V1sGZ(-G00960!mtP(VAz980ZtRq6~Ntt
+r?s9Yma1&t;$E5%U00000|NjF3dbCsSrXZ#V00000NkvXXu0mjf+oNdn
+
