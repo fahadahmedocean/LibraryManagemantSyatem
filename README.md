@@ -1,1 +1,2 @@
 # LMS
+Library management system.
